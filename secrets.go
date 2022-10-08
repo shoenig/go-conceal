@@ -11,10 +11,19 @@ const (
 	redactBytesGoString = "secrets.Bytes{}"
 )
 
+func hash(b []byte) int {
+	h := 0
+	for _, v := range b {
+		h = h*31 + int(v)
+	}
+	return h
+}
+
 // New returns a Text that keeps s secret.
 func New(s string) *Text {
 	return &Text{
 		value: s,
+		hash:  hash([]byte(s)),
 	}
 }
 
@@ -30,6 +39,7 @@ func New(s string) *Text {
 type Text struct {
 	_     [0]func() // not comparable
 	value string
+	hash  int
 }
 
 // Unveil returns the underlying value.
@@ -52,26 +62,22 @@ func (t *Text) GoString() string {
 
 // Equal returns true if the underlying text of t and o are the same.
 func (t *Text) Equal(o *Text) bool {
-	T := t.Unveil()
-	O := o.Unveil()
-	if len(T) != len(O) {
-		return false
-	}
-	// do a consistent time compare
-	same := true
-	for i := 0; i < len(T); i++ {
-		if T[i] != O[i] {
-			same = false
-		}
-	}
-	return same
+	return t.hash == o.hash
 }
 
 // Copy creates a deep copy of t.
 func (t *Text) Copy() *Text {
 	return &Text{
 		value: t.value,
+		hash:  t.hash,
 	}
+}
+
+// Hash creates a deterministic hash from the content of t.
+//
+// Implements hashicorp/go-set/HashFunc[int].
+func (t *Text) Hash() int {
+	return t.hash
 }
 
 // NewBytes returns a Bytes that keeps b a secret.
@@ -81,6 +87,7 @@ func (t *Text) Copy() *Text {
 func NewBytes(b []byte) *Bytes {
 	return &Bytes{
 		value: slices.Clone(b),
+		hash:  hash(b),
 	}
 }
 
@@ -96,6 +103,7 @@ func NewBytes(b []byte) *Bytes {
 type Bytes struct {
 	_     [0]func() // not comparable
 	value []byte
+	hash  int
 }
 
 // Unveil returns the underlying value.
@@ -118,22 +126,20 @@ func (b *Bytes) GoString() string {
 
 // Equal returns true if the underlying bytes of t and o are the same.
 func (b *Bytes) Equal(o *Bytes) bool {
-	if len(b.value) != len(o.value) {
-		return false
-	}
-
-	// do a consistent time compare
-	same := true
-	for i := 0; i < len(b.value); i++ {
-		if b.value[i] != o.value[i] {
-			same = false
-		}
-	}
-	return same
+	return b.hash == o.hash
 }
 
+// Copy creates a deep copy of b.
 func (b *Bytes) Copy() *Bytes {
 	return &Bytes{
 		value: slices.Clone(b.value),
+		hash:  b.hash,
 	}
+}
+
+// Hash creates a deterministic hash from the content of t.
+//
+// Implements hashicorp/go-set/HashFunc[int].
+func (b *Bytes) Hash() int {
+	return b.hash
 }
