@@ -1,4 +1,4 @@
-package secrets
+package conceal
 
 // MarshalText implements the encoding.TextMarshaller interface, which is also
 // compatible with the encoding/json marshaller.
