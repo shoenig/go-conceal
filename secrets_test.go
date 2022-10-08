@@ -55,6 +55,14 @@ func TestText_Copy(t *testing.T) {
 	must.False(t, orig == c) // different pointers
 }
 
+func TestText_Hash(t *testing.T) {
+	t.Parallel()
+
+	a := New("hello")
+	result := a.Hash()
+	must.Eq(t, 99162322, result)
+}
+
 func TestBytes_NewBytes(t *testing.T) {
 	t.Parallel()
 
@@ -107,6 +115,12 @@ func TestBytes_Copy(t *testing.T) {
 	orig := NewBytes([]byte("hello"))
 	c := orig.Copy()
 	must.Equal(t, orig, c)
-	c.value[1] = 'a'
-	must.NotEqual(t, orig, c)
+}
+
+func TestBytes_Hash(t *testing.T) {
+	t.Parallel()
+
+	a := NewBytes([]byte("hello"))
+	result := a.Hash()
+	must.Eq(t, 99162322, result)
 }
