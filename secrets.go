@@ -1,5 +1,5 @@
-// Package secrets provides types for protecting secretive text in logs.
-package secrets
+// Package conceal provides types for protecting sensitive text in logs.
+package conceal
 
 import (
 	"golang.org/x/exp/slices"
@@ -7,8 +7,8 @@ import (
 
 const (
 	redactString        = "<redacted>"
-	redactTextGoString  = "secrets.Text{}"
-	redactBytesGoString = "secrets.Bytes{}"
+	redactTextGoString  = "conceal.Text{}"
+	redactBytesGoString = "conceal.Bytes{}"
 )
 
 func hash(b []byte) int {
@@ -19,7 +19,7 @@ func hash(b []byte) int {
 	return h
 }
 
-// New returns a Text that keeps s secret.
+// New returns a Text that keeps s hidden.
 func New(s string) *Text {
 	return &Text{
 		value: s,
@@ -27,7 +27,7 @@ func New(s string) *Text {
 	}
 }
 
-// A Text secret contains a string which should not be exposed.
+// A Text contains a string which should not be exposed (e.g. in logs).
 //
 // This type overrides String and GoString such that the underling data does
 // not get exposed (typically through log statements) accidentally.
@@ -35,7 +35,8 @@ func New(s string) *Text {
 // To get at the underlying data, use the Secret method.
 //
 // Unlike a Go string, Text is not 'comparable' (it can't be a map key
-// or support ==). Use its Equal method to compare.
+// or support ==). Use its Equal method to compare, and its Hash method
+// for use in a hashicorp/go-set.HashMap[Text].
 type Text struct {
 	_     [0]func() // not comparable
 	value string
@@ -55,7 +56,7 @@ func (t *Text) String() string {
 	return redactString
 }
 
-// GoString returns "secrets.Text{}".
+// GoString returns "conceal.Text{}".
 func (t *Text) GoString() string {
 	return redactTextGoString
 }
@@ -122,7 +123,7 @@ func (b *Bytes) String() string {
 	return redactString
 }
 
-// GoString returns "secrets.Bytes{}".
+// GoString returns "conceal.Bytes{}".
 func (b *Bytes) GoString() string {
 	return redactBytesGoString
 }

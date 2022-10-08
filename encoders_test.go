@@ -1,4 +1,4 @@
-package secrets
+package conceal
 
 import (
 	"encoding/json"

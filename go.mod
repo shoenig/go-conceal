@@ -1,4 +1,4 @@
-module github.com/shoenig/secrets
+module github.com/shoenig/go-conceal
 
 go 1.18
 
