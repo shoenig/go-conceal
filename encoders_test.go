@@ -22,5 +22,5 @@ func TestText_JSON_unmarshal(t *testing.T) {
 	var result Text
 	err = json.Unmarshal(bs, &result)
 	must.NoError(t, err)
-	must.Eq(t, "abc123", result.Secret())
+	must.Eq(t, "abc123", result.Unveil())
 }

@@ -11,8 +11,8 @@ func TestText_New(t *testing.T) {
 	t.Parallel()
 
 	text := New("abc123")
-	value := text.Secret()
-	must.Eq(t, "abc123", value)
+	value := text.Unveil()
+	must.EqOp(t, "abc123", value)
 }
 
 func TestText_String(t *testing.T) {
@@ -20,7 +20,7 @@ func TestText_String(t *testing.T) {
 
 	text := New("abc123")
 	s := fmt.Sprintf("%s", text)
-	must.Eq(t, redactString, s)
+	must.EqOp(t, redactString, s)
 }
 
 func TestText_GoString(t *testing.T) {
@@ -28,7 +28,7 @@ func TestText_GoString(t *testing.T) {
 
 	text := New("abc123")
 	s := fmt.Sprintf("%#v", text)
-	must.Eq(t, redactTextGoString, s)
+	must.EqOp(t, redactTextGoString, s)
 }
 
 func TestText_Equal(t *testing.T) {
@@ -37,16 +37,22 @@ func TestText_Equal(t *testing.T) {
 	t.Run("same", func(t *testing.T) {
 		a := New("foo")
 		b := New("foo")
-		same := a.Equal(b)
-		must.True(t, same)
+		must.Equal(t, a, b)
 	})
 
 	t.Run("different", func(t *testing.T) {
-		foo := New("foo")
-		bar := New("bar")
-		same := foo.Equal(bar)
-		must.False(t, same)
+		a := New("foo")
+		b := New("bar")
+		must.NotEqual(t, a, b)
 	})
+}
+
+func TestText_Copy(t *testing.T) {
+	t.Parallel()
+
+	orig := New("hello")
+	c := orig.Copy()
+	must.False(t, orig == c) // different pointers
 }
 
 func TestBytes_NewBytes(t *testing.T) {
@@ -54,12 +60,12 @@ func TestBytes_NewBytes(t *testing.T) {
 
 	original := []byte{1, 2}
 	bs := NewBytes(original)
-	value1 := bs.Secret()
+	value1 := bs.Unveil()
 	must.Eq(t, []byte{1, 2}, value1)
 
 	// modify original, bs must not change
 	original[0] = 9
-	value2 := bs.Secret()
+	value2 := bs.Unveil()
 	must.Eq(t, []byte{1, 2}, value2)
 }
 
@@ -68,7 +74,7 @@ func TestBytes_String(t *testing.T) {
 
 	bs := NewBytes([]byte{1, 2, 3})
 	s := fmt.Sprintf("%s", bs)
-	must.Eq(t, redactString, s)
+	must.EqOp(t, redactString, s)
 }
 
 func TestBytes_GoString(t *testing.T) {
@@ -76,7 +82,7 @@ func TestBytes_GoString(t *testing.T) {
 
 	bs := NewBytes([]byte{1, 2, 3})
 	s := fmt.Sprintf("%#v", bs)
-	must.Eq(t, redactBytesGoString, s)
+	must.EqOp(t, redactBytesGoString, s)
 }
 
 func TestBytes_Equal(t *testing.T) {
@@ -85,14 +91,22 @@ func TestBytes_Equal(t *testing.T) {
 	t.Run("same", func(t *testing.T) {
 		a := NewBytes([]byte("foo"))
 		b := NewBytes([]byte("foo"))
-		same := a.Equal(b)
-		must.True(t, same)
+		must.Equal(t, a, b)
 	})
 
 	t.Run("different", func(t *testing.T) {
-		foo := NewBytes([]byte("foo"))
-		bar := NewBytes([]byte("bar"))
-		same := foo.Equal(bar)
-		must.False(t, same)
+		a := NewBytes([]byte("foo"))
+		b := NewBytes([]byte("bar"))
+		must.NotEqual(t, a, b)
 	})
+}
+
+func TestBytes_Copy(t *testing.T) {
+	t.Parallel()
+
+	orig := NewBytes([]byte("hello"))
+	c := orig.Copy()
+	must.Equal(t, orig, c)
+	c.value[1] = 'a'
+	must.NotEqual(t, orig, c)
 }
