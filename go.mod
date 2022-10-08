@@ -1,5 +1,7 @@
-module gophers.dev/pkgs/secrets
+module github.com/shoenig/secrets
 
-go 1.12
+go 1.18
 
-require github.com/stretchr/testify v1.4.0
+require github.com/shoenig/test v0.4.0
+
+require github.com/google/go-cmp v0.5.8 // indirect
