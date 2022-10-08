@@ -62,7 +62,10 @@ func (t *Text) GoString() string {
 
 // Equal returns true if the underlying text of t and o are the same.
 func (t *Text) Equal(o *Text) bool {
-	return t.hash == o.hash
+	if t == nil || o == nil {
+		return t == o
+	}
+	return t.value == o.value
 }
 
 // Copy creates a deep copy of t.
@@ -126,7 +129,10 @@ func (b *Bytes) GoString() string {
 
 // Equal returns true if the underlying bytes of t and o are the same.
 func (b *Bytes) Equal(o *Bytes) bool {
-	return b.hash == o.hash
+	if b == nil || o == nil {
+		return b == o
+	}
+	return slices.Equal(b.value, o.value)
 }
 
 // Copy creates a deep copy of b.
