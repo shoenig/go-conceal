@@ -1,6 +1,10 @@
 // Package secrets provides types for protecting secretive text in logs.
 package secrets
 
+import (
+	"golang.org/x/exp/slices"
+)
+
 const (
 	redactString        = "<redacted>"
 	redactTextGoString  = "secrets.Text{}"
@@ -8,8 +12,8 @@ const (
 )
 
 // New returns a Text that keeps s secret.
-func New(s string) Text {
-	return Text{
+func New(s string) *Text {
+	return &Text{
 		value: s,
 	}
 }
@@ -28,28 +32,28 @@ type Text struct {
 	value string
 }
 
-// Secret returns the underlying value.
+// Unveil returns the underlying value.
 //
 // This method should never be called in a context where the value should not
 // be exposed, for example in log lines.
-func (t Text) Secret() string {
+func (t *Text) Unveil() string {
 	return t.value
 }
 
 // String returns "<redacted>" instead of the underlying value.
-func (t Text) String() string {
+func (t *Text) String() string {
 	return redactString
 }
 
 // GoString returns "secrets.Text{}".
-func (t Text) GoString() string {
+func (t *Text) GoString() string {
 	return redactTextGoString
 }
 
 // Equal returns true if the underlying text of t and o are the same.
-func (t Text) Equal(o Text) bool {
-	T := t.Secret()
-	O := o.Secret()
+func (t *Text) Equal(o *Text) bool {
+	T := t.Unveil()
+	O := o.Unveil()
 	if len(T) != len(O) {
 		return false
 	}
@@ -63,15 +67,20 @@ func (t Text) Equal(o Text) bool {
 	return same
 }
 
+// Copy creates a deep copy of t.
+func (t *Text) Copy() *Text {
+	return &Text{
+		value: t.value,
+	}
+}
+
 // NewBytes returns a Bytes that keeps b a secret.
 //
 // A copy of b is created, so that later changes to b have no effect on the
 // protected value.
-func NewBytes(b []byte) Bytes {
-	v := make([]byte, len(b))
-	copy(v, b)
-	return Bytes{
-		value: v,
+func NewBytes(b []byte) *Bytes {
+	return &Bytes{
+		value: slices.Clone(b),
 	}
 }
 
@@ -89,28 +98,26 @@ type Bytes struct {
 	value []byte
 }
 
-// Secret returns the underlying value.
+// Unveil returns the underlying value.
 //
 // This method should never be called in a context where the value should not
 // be exposed, for example in log lines.
-func (b Bytes) Secret() []byte {
-	bs := make([]byte, len(b.value))
-	copy(bs, b.value)
-	return bs
+func (b *Bytes) Unveil() []byte {
+	return slices.Clone(b.value)
 }
 
 // String returns "<redacted>" instead of the underlying value.
-func (b Bytes) String() string {
+func (b *Bytes) String() string {
 	return redactString
 }
 
 // GoString returns "secrets.Bytes{}".
-func (b Bytes) GoString() string {
+func (b *Bytes) GoString() string {
 	return redactBytesGoString
 }
 
 // Equal returns true if the underlying bytes of t and o are the same.
-func (b Bytes) Equal(o Bytes) bool {
+func (b *Bytes) Equal(o *Bytes) bool {
 	if len(b.value) != len(o.value) {
 		return false
 	}
@@ -123,4 +130,10 @@ func (b Bytes) Equal(o Bytes) bool {
 		}
 	}
 	return same
+}
+
+func (b *Bytes) Copy() *Bytes {
+	return &Bytes{
+		value: slices.Clone(b.value),
+	}
 }
