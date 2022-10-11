@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	redactString        = "<redacted>"
+	redactString        = "(redacted)"
 	redactTextGoString  = "conceal.Text{}"
 	redactBytesGoString = "conceal.Bytes{}"
 )
@@ -51,7 +51,7 @@ func (t *Text) Unveil() string {
 	return t.value
 }
 
-// String returns "<redacted>" instead of the underlying value.
+// String returns "(redacted)" instead of the underlying value.
 func (t *Text) String() string {
 	return redactString
 }

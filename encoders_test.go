@@ -12,7 +12,7 @@ func TestText_JSON_marshal(t *testing.T) {
 
 	result, err := json.Marshal(text)
 	must.NoError(t, err)
-	must.Eq(t, []byte(`"abc123"`), result)
+	must.Eq(t, []byte(`"(redacted)"`), result)
 }
 
 func TestText_JSON_unmarshal(t *testing.T) {
