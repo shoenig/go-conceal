@@ -2,7 +2,7 @@
 package conceal
 
 import (
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 const (
