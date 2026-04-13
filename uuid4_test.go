@@ -10,9 +10,9 @@ import (
 func TestUUIDv4(t *testing.T) {
 	id := UUIDv4()
 
-	s := fmt.Sprintf("%s", id)
+	s := fmt.Sprintf("%s", id) // nolint: staticcheck
 	must.Eq(t, "(redacted)", s)
 
-	real := id.Unveil()
-	must.UUIDv4(t, real)
+	result := id.Unveil()
+	must.UUIDv4(t, result)
 }

@@ -19,7 +19,7 @@ func TestText_String(t *testing.T) {
 	t.Parallel()
 
 	text := New("abc123")
-	s := fmt.Sprintf("%s", text)
+	s := fmt.Sprintf("%s", text) // nolint: staticcheck
 	must.EqOp(t, redactString, s)
 }
 
@@ -89,7 +89,7 @@ func TestBytes_String(t *testing.T) {
 	t.Parallel()
 
 	bs := NewBytes([]byte{1, 2, 3})
-	s := fmt.Sprintf("%s", bs)
+	s := fmt.Sprintf("%s", bs) // nolint: staticcheck
 	must.EqOp(t, redactString, s)
 }
 
