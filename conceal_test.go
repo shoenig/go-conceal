@@ -63,6 +63,14 @@ func TestText_Hash(t *testing.T) {
 	must.Eq(t, 99162322, result)
 }
 
+func TestText_Len(t *testing.T) {
+	t.Parallel()
+
+	text := New("hello")
+	result := text.Len()
+	must.Eq(t, 5, result)
+}
+
 func TestBytes_NewBytes(t *testing.T) {
 	t.Parallel()
 
@@ -123,4 +131,12 @@ func TestBytes_Hash(t *testing.T) {
 	a := NewBytes([]byte("hello"))
 	result := a.Hash()
 	must.Eq(t, 99162322, result)
+}
+
+func TestBytes_Len(t *testing.T) {
+	t.Parallel()
+
+	a := NewBytes([]byte("hello"))
+	result := a.Len()
+	must.Eq(t, 5, result)
 }

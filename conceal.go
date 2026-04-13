@@ -84,6 +84,11 @@ func (t *Text) Hash() int {
 	return t.hash
 }
 
+// Len returns the length of t.
+func (t *Text) Len() int {
+	return len(t.value)
+}
+
 // NewBytes returns a Bytes that keeps b a secret.
 //
 // A copy of b is created, so that later changes to b have no effect on the
@@ -149,4 +154,9 @@ func (b *Bytes) Copy() *Bytes {
 // Implements hashicorp/go-set/HashFunc[int].
 func (b *Bytes) Hash() int {
 	return b.hash
+}
+
+// Len returns the length of b.
+func (b *Bytes) Len() int {
+	return len(b.value)
 }
