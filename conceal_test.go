@@ -66,9 +66,31 @@ func TestText_Hash(t *testing.T) {
 func TestText_Len(t *testing.T) {
 	t.Parallel()
 
-	text := New("hello")
-	result := text.Len()
-	must.Eq(t, 5, result)
+	t.Run("nil", func(t *testing.T) {
+		text := (*Text)(nil)
+		result := text.Len()
+		must.Zero(t, result)
+	})
+
+	t.Run("not nil", func(t *testing.T) {
+		text := New("hello")
+		result := text.Len()
+		must.Eq(t, 5, result)
+	})
+}
+
+func TestText_IsZero(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nil", func(t *testing.T) {
+		a := (*Text)(nil)
+		must.True(t, a.IsZero())
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		a := New("")
+		must.True(t, a.IsZero())
+	})
 }
 
 func TestBytes_NewBytes(t *testing.T) {
@@ -136,7 +158,29 @@ func TestBytes_Hash(t *testing.T) {
 func TestBytes_Len(t *testing.T) {
 	t.Parallel()
 
-	a := NewBytes([]byte("hello"))
-	result := a.Len()
-	must.Eq(t, 5, result)
+	t.Run("nil", func(t *testing.T) {
+		a := (*Bytes)(nil)
+		result := a.Len()
+		must.Zero(t, result)
+	})
+
+	t.Run("not nil", func(t *testing.T) {
+		a := NewBytes([]byte("hello"))
+		result := a.Len()
+		must.Eq(t, 5, result)
+	})
+}
+
+func TestBytes_IsZero(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nil", func(t *testing.T) {
+		a := (*Bytes)(nil)
+		must.True(t, a.IsZero())
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		a := NewBytes([]byte{})
+		must.True(t, a.IsZero())
+	})
 }
