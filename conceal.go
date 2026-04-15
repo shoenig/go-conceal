@@ -84,8 +84,20 @@ func (t *Text) Hash() int {
 	return t.hash
 }
 
+// IsZero returns true if t contains no value.
+//
+// Returns true if t is nil.
+func (t *Text) IsZero() bool {
+	return t == nil || len(t.value) == 0
+}
+
 // Len returns the length of t.
+//
+// Returns 0 if IsZero is true.
 func (t *Text) Len() int {
+	if t.IsZero() {
+		return 0
+	}
 	return len(t.value)
 }
 
@@ -156,7 +168,19 @@ func (b *Bytes) Hash() int {
 	return b.hash
 }
 
+// IsZero returns true if b contains no value.
+//
+// Returns true if b is nil.
+func (b *Bytes) IsZero() bool {
+	return b == nil || len(b.value) == 0
+}
+
 // Len returns the length of b.
+//
+// Returns 0 if IsZero is true.
 func (b *Bytes) Len() int {
+	if b.IsZero() {
+		return 0
+	}
 	return len(b.value)
 }
