@@ -2,6 +2,7 @@
 package conceal
 
 import (
+	"crypto/subtle"
 	"slices"
 )
 
@@ -62,11 +63,19 @@ func (t *Text) GoString() string {
 }
 
 // Equal returns true if the underlying text of t and o are the same.
+//
+// Performs the comparison in constant time with respect to the contents of t
+// and o, so that callers comparing secrets (e.g. an incoming password against
+// a stored one) are not vulnerable to timing attacks. A pre-computed hash is
+// used as a fast (non-secret) rejection for clearly unequal values.
 func (t *Text) Equal(o *Text) bool {
 	if t == nil || o == nil {
 		return t == o
 	}
-	return t.value == o.value
+	if t.hash != o.hash {
+		return false
+	}
+	return subtle.ConstantTimeCompare([]byte(t.value), []byte(o.value)) == 1
 }
 
 // Copy creates a deep copy of t.
@@ -146,11 +155,15 @@ func (b *Bytes) GoString() string {
 }
 
 // Equal returns true if the underlying bytes of t and o are the same.
+//
+// Performs the comparison in constant time with respect to the contents of b
+// and o, so that callers comparing secrets are not vulnerable to timing
+// attacks.
 func (b *Bytes) Equal(o *Bytes) bool {
 	if b == nil || o == nil {
 		return b == o
 	}
-	return slices.Equal(b.value, o.value)
+	return subtle.ConstantTimeCompare(b.value, o.value) == 1
 }
 
 // Copy creates a deep copy of b.
